@@ -52,10 +52,10 @@ Notice what is happening on the second `Route`. When rendering a component
 through a `Route`, the component receives props _from_ the `Route` automatically
 that contain information on the route, including the URL path that triggered the
 `Route` to render. This is happening on _both_ of these `Route`s, but in the
-first `Route`, it is auotmatically being passed down. The issue here is that, in
+first `Route`, it is automatically being passed down. The issue here is that, in
 addition to Router props, we also want to pass in the data we have in state.
 
-The easiest way to handle this is to use the `render`. The `render` attribute of
+The easiest way to handle this is to use `render`. The `render` attribute of
 `Route` takes an anonymous function, and since `Route` is passing its own props
 automatically, they are available as the argument for the function, called
 `routerProps` here. Since the function is simply returning a component, we can
@@ -63,7 +63,7 @@ then pass in both `routerProps` and `this.state.movies` as props to the
 `MoviesPage` component.
 
 Looking at the __MoviesPage__ component, this component is responsible for
-loading our __MovieList__ component and passing in the movies we received from
+loading our __MoviesList__ component and passing in the movies we received from
 __App__.
 
 ```javascript
@@ -84,9 +84,9 @@ export default MoviesPage
 ```
 
 At the moment, our __MoviesPage__ component is purely presentational. It is
-simply middle component betwene __App__ and __MoviesList__, but we will come
+simply the middle component between __App__ and __MoviesList__, but we will come
 back to this component in a moment. Right now, if we try to run our React app,
-we get an error because __MovieList__ is not defined yet!
+we get an error because __MoviesList__ is not defined yet!
 
 Let's create our __MoviesList__ component to render __React Router__ `Link`s for
 each movie.
@@ -97,8 +97,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 const MoviesList = ({ movies }) => {
-  const renderMovies = Object.keys(movies).map(movieID =>
-    <Link key={movieID} to={`/movies/${movieID}`}>{movies[movieID].title}</Link>
+  const renderMovies = Object.keys(movies).map(movieId =>
+    <Link key={movieId} to={`/movies/${movieId}`}>{movies[movieId].title}</Link>
   );
 
   return (
@@ -114,10 +114,10 @@ export default MoviesList;
 
 Since the prop `movies` is an object containing each movie, in order to iterate
 over it, we'll need to use `Object.keys(movies).map()`. Since the keys in the
-object _are also the id values for each movie_, we can use `movieID` directly in
+object _are also the id values for each movie_, we can use `movieId` directly in
 some of the attributes, but also use it to get information from the `movies`
-object, as we see with `movies[movieID].title`. Now, when our app runs, if a
-user hits to the `/movies` route, `MoviesList` will render a list of clickable
+object, as we see with `movies[movieId].title`. Now, when our app runs, if a
+user goes to the `/movies` route, `MoviesList` will render a list of clickable
 router links.
 
 ### Linking to the Show
@@ -180,8 +180,8 @@ stuff depending on what the `match.url` returns (in this example, it returns
 looks something like `movies/1`.
 
 Going briefly back to our __MoviesList__ component, when `movies` is mapped, our
-has `Link`s are each getting a unique path in the `to={...}` attribute, since
-each `movieID` is different.
+ `Link`s are each getting a unique path in the `to={...}` attribute, since
+each `movieId` is different.
 
 ```javascript
 // ./src/components/MoviesList.js
@@ -189,8 +189,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 const MoviesList = ({ movies }) => {
-  const renderMovies = Object.keys(movies).map(movieID =>
-    <Link key={movieID} to={`/movies/${movieID}`}>{movies[movieID].title}</Link>
+  const renderMovies = Object.keys(movies).map(movieId =>
+    <Link key={movieId} to={`/movies/${movieId}`}>{movies[movieId].title}</Link>
   );
 
   return (
@@ -225,7 +225,7 @@ const MoviesPage = ({ match, movies }) => (
     <Route exact path={match.url} render={() => (
       <h3>Please select a Movie from the list.</h3>
     )}/>
-    <Route path={`${match.url}/:movieId`} render={routerProps => <MovieShow movies={movies} /> }/>
+    <Route path={`${match.url}/:movieId`} render={routerProps => <MovieShow {...routerProps} movies={movies} /> }/>
   </div>
 )
 
@@ -254,16 +254,16 @@ Here, we've got our `movies` as an object in props. We've also got our Router
 props, from which we've extracted `match`. Within the `match` object is
 `params`, which contains any parameters from the URL path. In this case, we only
 have one, `movieId`, which we defined in __MoviesPage__. Combining info from
-these two props lets us access the specific movie that's ID matches the
+these two props lets us access the specific movie with the ID that matches the
 `movieId` from the path, resulting in the correct movie title being displayed!
 
 
 ### Summary
 
 So far we saw how to set up our nested routes. We did so by making two `Route`
-components within __MoviesPage__. One `Route` component that renders a component
-if it is a perfect match with the url or the nested `Route` if it includes the
-`match.url` and the nested key (in this case :movieId).
+components within __MoviesPage__. The first `Route` component renders a component
+if it is a perfect match with the url. The second renders the nested `Route` if 
+it includes the `match.url` and the nested key (in this case :movieId).
 
 If you're thinking to yourself that props seem to be getting a little out of
 hand... well, you're right! Props can be unruly in complex apps, with multiple
